@@ -1,12 +1,8 @@
-# Create T3 App
+# Betting app
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+This is a template of a Betting app that was built on the [T3 Stack](https://create.t3.gg/) which was bootstrapped with `create-t3-app`.
 
-## What's next? How do I make an app with this?
-
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
-
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## What's the tech stack?
 
 - [Next.js](https://nextjs.org)
 - [NextAuth.js](https://next-auth.js.org)
@@ -14,15 +10,41 @@ If you are not familiar with the different technologies used in this project, pl
 - [Tailwind CSS](https://tailwindcss.com)
 - [tRPC](https://trpc.io)
 
-## Learn More
+## Required on your machine
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+- [Postgresql](https://www.postgresql.org/) 
+- [Nodejs](https://nodejs.org/en)
+- [Yarn](https://yarnpkg.com/)
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+## Installation steps
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+- [Create a user and database](https://medium.com/coding-blocks/creating-user-database-and-adding-access-on-postgresql-8bfcd2f4a91e)
 
-## How do I deploy this?
+### Copy .env.example to .env. 
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+- Fill in your database credentials according to the template
+- Fill in the `NEXTAUTH_SECRET` variable from the output of the `openssl rand -base64 32` command.
+
+### install dependencies
+
+```
+yarn install
+```
+
+### Migrate the prisma schema
+
+```
+yarn db:push
+```
+
+### Seed the database with test data
+
+```
+yarn db:seed
+```
+
+### Then, start the development server
+
+```
+yarn dev
+```
