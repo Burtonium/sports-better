@@ -1,18 +1,11 @@
-import z from "zod";
 import {
   createTRPCRouter,
   publicProcedure,
 } from "~/server/api/trpc";
 
-export const registerSchema = z.object({
-  username: z.string(),
-  password: z.string().min(4),
-});
-
-export type RegisterSchema = z.infer<typeof registerSchema>;
-
 import { TRPCError } from "@trpc/server";
 import bcrypt from "bcrypt";
+import { registerSchema } from "~/validation/auth";
 
 const SALT_ROUNDS = 10;
 
@@ -43,7 +36,7 @@ export const authRouter = createTRPCRouter({
       return {
         status: 201,
         message: "Account created successfully",
-        result: result.username as string,
+        result: result.username,
       };
     }),
 });

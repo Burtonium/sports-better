@@ -1,15 +1,16 @@
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { User } from "@prisma/client";
+import bcrypt from "bcrypt";
 import { type GetServerSidePropsContext } from "next";
 import {
   getServerSession,
   type DefaultSession,
   type NextAuthOptions,
 } from "next-auth";
+import type { DefaultJWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-import { env } from "~/env.mjs";
+
 import { db } from "~/server/db";
+import { loginSchema } from "~/validation/auth";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -18,20 +19,23 @@ import { db } from "~/server/db";
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
 declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: DefaultSession["user"] & {
-      id: string;
-      // ...other properties
-      // role: UserRole;
-    };
+  interface User {
+    id: string;
+    username: string;
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface Session extends DefaultSession {
+    user: User;
+  }
 }
 
+declare module "next-auth/jwt" {
+  /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
+  interface JWT extends DefaultJWT {
+    id: string;
+    username: string;
+  }
+}
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -39,15 +43,29 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    jwt: ({ token, user }) => {
+      if (user) {
+        token.id = user.id;
+        token.username = user.username;
+      }
+
+      return token;
+    },
+    session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.id;
+        session.user.username = token.username;
+      }
+
+      return session;
+    },
   },
-  adapter: PrismaAdapter(db),
+  secret: process.env.NEXTAUTH_SECRET,
+  pages: {
+    signIn: "/login",
+    newUser: "/register",
+    error: "/login",
+  },
   providers: [
     CredentialsProvider({
       // The name to display on the sign in form (e.g. "Sign in with...")
@@ -60,30 +78,28 @@ export const authOptions: NextAuthOptions = {
         username: { label: "Username", type: "text", placeholder: "bobbybrown" },
         password: { label: "Password", type: "password" }
       },
-      async authorize(credentials) {
-        const userCredentials = {
-          username: credentials?.username,
-          password: credentials?.password,
-        };
+      authorize: async (credentials) => {
+        const cred = await loginSchema.parseAsync(credentials);
 
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/auth/login`,
-          {
-            method: "POST",
-            body: JSON.stringify(userCredentials),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const user = await db.user.findFirst({
+          where: { username: cred.username },
+        });
 
-        const user = await res.json() as User;
-
-        if (res.ok && user) {
-          return user;
-        } else {
+        if (!user) {
           return null;
         }
+
+        const isValidPassword = bcrypt.compareSync(
+          cred.password,
+          user.password
+        );
+
+        if (!isValidPassword) {
+          return null;
+        }
+
+
+        return user;
       },
     })
     /**

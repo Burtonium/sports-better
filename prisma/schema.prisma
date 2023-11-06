@@ -14,30 +14,20 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
+model Event {
+    eventId        String   @id @default(cuid())
+    eventName      String
+    odds           Decimal
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
     createdBy   User   @relation(fields: [createdById], references: [id])
     createdById String
-
-    @@index([name])
-}
-
-model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
     id            String    @id @default(cuid())
     username      String  @unique
     password      String
-    sessions      Session[]
-    posts         Post[]
+    events        Event[]
 }
