@@ -20,30 +20,30 @@ This is a template of a Betting app that was built on the [T3 Stack](https://cre
 
 - [Create a user and database](https://medium.com/coding-blocks/creating-user-database-and-adding-access-on-postgresql-8bfcd2f4a91e)
 
-### Copy .env.example to .env. 
+#### Copy .env.example to .env. 
 
-- Fill in your database credentials according to the template
+- Replace the variables in `DATABASE_URL` with your database credentials according to the template
 - Fill in the `NEXTAUTH_SECRET` variable from the output of the `openssl rand -base64 32` command.
 
-### install dependencies
+#### install dependencies
 
 ```
 yarn install
 ```
 
-### Migrate the prisma schema
+#### Migrate the prisma schema
 
 ```
 yarn db:push
 ```
 
-### Seed the database with test data
+#### Seed the database with test data
 
 ```
 yarn db:seed
 ```
 
-### Then, start the development server
+#### Then, start the development server
 
 ```
 yarn dev
