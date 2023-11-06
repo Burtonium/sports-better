@@ -19,7 +19,7 @@ async function main() {
       createdById: admin.id
     }, {
       eventName: 'Gamblers\' Gauntlet: All Bets Are On!',
-      odds: 1.75,
+      odds: 1.42,
       createdById: admin.id
     }, {
       eventName: 'Lucky Lineup League: Bet, Win, Repeat',
@@ -27,7 +27,7 @@ async function main() {
       createdById: admin.id
     }, {
       eventName: 'Sports Spectacle Showdown: Betting Bonanza',
-      odds: 1.75,
+      odds: 1.124,
       createdById: admin.id
     }]
   });

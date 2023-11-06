@@ -19,7 +19,7 @@ const BetModal: FC<Props> = ({ event, onDismiss = NOOP }) => {
   return event && (
     <div tabIndex={-1} className="backdrop-brightness-50 flex justify-center items-center fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
       <div className="relative w-full max-w-2xl max-h-full">
-        <form onSubmit={onSubmit} className="relative bg-slate-900 rounded-lg shadow">
+        <form onSubmit={onSubmit} className="relative bg-gray-800 rounded-lg shadow">
           <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
             <h3 className="text-xl font-semibold">
               Bet on {event.eventName}
